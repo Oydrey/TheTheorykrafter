@@ -26,6 +26,31 @@ public class JsonReader {
 	}
 	
 	public EmbedBuilder getEmbedChampion(String champion) {
+		JSONObject championToSearch = getChampion(champion);
+		
+		if (championToSearch != null) {
+			EmbedBuilder embed = new EmbedBuilder()
+					.setColor(Color.GREEN)
+					.setTitle(champion)
+					.setDescription("Clique sur le nom du champion pour accéder au lien de téléchargement afin d'importer le set d'objet. \n Tu ne sais pas comment faire ? Tape !importset pour voir les étapes !");
+			
+			String imageURI = championToSearch.getString("image");
+			embed.setThumbnail(new File(imageURI));
+			
+			embed.addField("Early :", listItems(championToSearch.getJSONArray("Early")));
+			embed.addField("Core", listItems(championToSearch.getJSONArray("Core")));
+			embed.addField("Offensif", listItems(championToSearch.getJSONArray("Offensif")));
+			embed.addField("Défensif", listItems(championToSearch.getJSONArray("Défensif")));
+			
+			embed.setUrl(championToSearch.getString("Importer"));
+			
+			return embed;
+		}
+		
+		throw new NullPointerException();
+	}
+	
+	private JSONObject getChampion(String champion) {
 		JSONArray allChampions = jsonObject.getJSONArray("champions");
 		JSONObject championToSearch = null;
 		for (int i = 0; i<allChampions.length(); i++) {
@@ -34,15 +59,17 @@ public class JsonReader {
 			}
 		}
 		
-		EmbedBuilder embed = new EmbedBuilder()
-				.setColor(Color.GREEN)
-				.setTitle(champion);
+		return championToSearch;
+	}
+	
+	private String listItems(JSONArray json) {
+		String listItems = "";
 		
-		//marche pas
-		String imageURI = championToSearch.getString("image");
-		embed.setThumbnail(new File(imageURI));
+		for (int i = 0; i < json.length(); i++) {
+			listItems+=json.getString(i) + "\n";
+		}
 		
-		return embed;
+		return listItems;
 	}
 	
 	private void initJson() throws Exception {
