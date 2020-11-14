@@ -37,10 +37,14 @@ public class JsonReader {
 			String imageURI = championToSearch.getString("image");
 			embed.setThumbnail(new File(imageURI));
 			
-			embed.addField("Early :", listItems(championToSearch.getJSONArray("Early")));
-			embed.addField("Core", listItems(championToSearch.getJSONArray("Core")));
-			embed.addField("Offensif", listItems(championToSearch.getJSONArray("Offensif")));
-			embed.addField("Défensif", listItems(championToSearch.getJSONArray("Défensif")));
+			JSONArray build = championToSearch.getJSONArray("Build");
+			
+			for (int i = 0; i < build.length(); i++) {
+				JSONArray block = build.getJSONArray(i);
+				String name = (String)block.remove(0);
+				embed.addField(name, listItems(block));
+				
+			}
 			
 			embed.setUrl(championToSearch.getString("Importer"));
 			
